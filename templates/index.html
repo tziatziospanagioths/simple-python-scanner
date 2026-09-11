@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Web Vulnerability Scanner</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background-color: #1e1e1e; color: #ffffff; }
+        .container { max-width: 600px; margin: auto; background: #2d2d2d; padding: 20px; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.5); }
+        input[type="text"] { width: 70%; padding: 10px; margin-bottom: 10px; border: none; border-radius: 4px; }
+        input[type="submit"] { padding: 10px 20px; background: #007acc; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        input[type="submit"]:hover { background: #005f9e; }
+        .result-box { margin-top: 20px; padding: 15px; background: #3c3c3c; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🛡️ Web Vulnerability Scanner</h2>
+        <p>Enter a target URL to check its security posture.</p>
+        
+        <form method="POST">
+            <input type="text" name="url_input" placeholder="http://example.com" required>
+            <input type="submit" value="Run Scan">
+        </form>
+
+        {% if scan_result %}
+        <div class="result-box">
+            <h4>Target: {{ url }}</h4>
+            <p>{{ scan_result }}</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
