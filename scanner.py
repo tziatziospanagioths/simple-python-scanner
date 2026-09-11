@@ -1,24 +1,36 @@
 import requests
 
 def check_headers(url):
-    print(f"[*] Starting scan on: {url}\n")
+    """
+    Scans the target URL and returns a dictionary with the results.
+    Instead of printing to the terminal, it packages the data for the Flask app.
+    """
+
+    scan_results = {
+        'target': url,
+        'status_code': None,
+        'headers': {},
+        'error': None
+    }
+    
+   
+    if not url.startswith(('http://', 'https://')):
+        url = 'http://' + url
+        scan_results['target'] = url
+
     try:
        
         response = requests.get(url, timeout=5)
+        scan_results['status_code'] = response.status_code
         
-        
+      
         if response.status_code == 200:
-            print("[+] Target is online! Checking headers...\n")
-            
-            
-            for header, value in response.headers.items():
-                print(f" - {header}: {value}")
-        else:
-            print(f"[-] Target returned status code: {response.status_code}")
+          
+            scan_results['headers'] = dict(response.headers)
             
     except requests.exceptions.RequestException as e:
-        print(f"[!] Connection error: {e}")
+        
+        scan_results['error'] = str(e)
+        
+    return scan_results
 
-if __name__ == "__main__":
-    target_url = "http://example.com"
-    check_headers(target_url)

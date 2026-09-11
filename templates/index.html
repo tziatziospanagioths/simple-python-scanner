@@ -4,30 +4,138 @@
     <meta charset="UTF-8">
     <title>Web Vulnerability Scanner</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; background-color: #1e1e1e; color: #ffffff; }
-        .container { max-width: 600px; margin: auto; background: #2d2d2d; padding: 20px; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.5); }
-        input[type="text"] { width: 70%; padding: 10px; margin-bottom: 10px; border: none; border-radius: 4px; }
-        input[type="submit"] { padding: 10px 20px; background: #007acc; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        input[type="submit"]:hover { background: #005f9e; }
-        .result-box { margin-top: 20px; padding: 15px; background: #3c3c3c; border-radius: 5px; }
+        /* Clean, minimal, non-bold font setup */
+        body { 
+            font-family: 'Segoe UI', Helvetica, Arial, sans-serif; 
+            margin: 40px; 
+            background-color: #121212; /* Dark matte black */
+            color: #e0e0e0; /* Off-white for general text readability */
+        }
+        
+        /* The main box */
+        .container { 
+            max-width: 800px; 
+            margin: auto; 
+            background: #1a1a1a; /* Slightly lighter matte black for depth */
+            padding: 30px; 
+            border-radius: 6px; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6); 
+        }
+
+        /* Header layout to align the logo and title side by side */
+        .header-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .header-container h2 {
+            margin: 0;
+            font-weight: 500; /* Minimal weight, not too bold */
+            color: #cba135; /* Mustard yellow accent */
+        }
+        
+        /* The emoji logo (This is where your PNG will go later) */
+        .logo {
+            font-size: 28px;
+            margin-right: 15px;
+        }
+
+        p { color: #999999; }
+
+        /* Input field styling */
+        input[type="text"] { 
+            width: 70%; 
+            padding: 12px; 
+            margin-bottom: 15px; 
+            border: 1px solid #333; 
+            border-radius: 4px; 
+            background-color: #222222;
+            color: #ffffff;
+            font-family: inherit;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #cba135; /* Mustard highlight when typing */
+        }
+
+        /* Button styling */
+        input[type="submit"] { 
+            padding: 12px 24px; 
+            background: #cba135; /* Mustard yellow */
+            color: #121212; /* Dark text on the button for contrast */
+            font-weight: 600;
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            transition: background 0.2s ease-in-out;
+        }
+        
+        input[type="submit"]:hover { 
+            background: #a8852a; /* Slightly darker mustard on hover */
+        }
+
+        /* Results section styling */
+        .result-box { 
+            margin-top: 25px; 
+            padding: 20px; 
+            background: #222222; 
+            border-left: 4px solid #cba135; /* Elegant mustard line on the side */
+            border-radius: 4px; 
+        }
+        
+        .header-key { 
+            font-weight: 500; 
+            color: #cba135; /* Mustard color for the header names */
+        }
+        
+        .error-text { color: #ff5252; }
+        ul { list-style-type: none; padding-left: 0; }
+        li { margin-bottom: 8px; border-bottom: 1px solid #2d2d2d; padding-bottom: 5px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>🛡️ Web Vulnerability Scanner</h2>
+        
+        <!-- Header section -->
+        <div class="header-container">
+            <!-- This span will be replaced by <img src="..."> when you make the logo -->
+            <span class="logo">🛡️</span>
+            <h2>Web Vulnerability Scanner</h2>
+        </div>
+        
         <p>Enter a target URL to check its security posture.</p>
         
+        <!-- Search form -->
         <form method="POST">
             <input type="text" name="url_input" placeholder="http://example.com" required>
             <input type="submit" value="Run Scan">
         </form>
 
-        {% if scan_result %}
+        <!-- Dynamic Results Display -->
+        {% if result %}
         <div class="result-box">
-            <h4>Target: {{ url }}</h4>
-            <p>{{ scan_result }}</p>
+            <h4 style="color: #ffffff; margin-top: 0;">Target: {{ result.target }}</h4>
+            
+            {% if result.error %}
+                <p class="error-text"><strong>Connection Error:</strong> {{ result.error }}</p>
+            {% else %}
+                <p style="color: #cccccc;"><strong>Status Code:</strong> {{ result.status_code }}</p>
+                
+                {% if result.headers %}
+                    <h4 style="color: #cba135; margin-top: 20px;">HTTP Headers Retrieved:</h4>
+                    <ul>
+                    {% for key, value in result.headers.items() %}
+                        <li><span class="header-key">{{ key }}:</span> {{ value }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endif %}
+            
         </div>
         {% endif %}
+        
     </div>
 </body>
 </html>

@@ -5,17 +5,19 @@ app = Flask(__name__)
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-    result = None
-    target = None
+    result_data = None
+    target_url = None
     
     if request.method == 'POST':
         
-        target = request.form.get('url_input')
+        target_url = request.form.get('url_input')
         
-        
-        result = "Scan initiated for: " + target
-        
-    return render_template('index.html', scan_result=result, url=target)
+        if target_url:
+            
+            result_data = scanner.check_headers(target_url)
+            
+    
+    return render_template('index.html', result=result_data)
 
 if __name__ == '__main__':
     app.run(debug=True)
