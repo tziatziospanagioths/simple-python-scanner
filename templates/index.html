@@ -2,135 +2,99 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Web Vulnerability Scanner</title>
+    <title>Can I Trust You?</title>
     <style>
-        /* Clean, minimal, non-bold font setup */
         body { 
-            font-family: 'Segoe UI', Helvetica, Arial, sans-serif; 
+            font-family: 'Courier New', Courier, monospace; 
             margin: 40px; 
-            background-color: #121212; /* Dark matte black */
-            color: #e0e0e0; /* Off-white for general text readability */
+            background-color: #121212; 
+            color: #e0e0e0; 
         }
-        
-        /* The main box */
         .container { 
             max-width: 800px; 
             margin: auto; 
-            background: #1a1a1a; /* Slightly lighter matte black for depth */
+            background: #1a1a1a; 
             padding: 30px; 
             border-radius: 6px; 
             box-shadow: 0 4px 20px rgba(0,0,0,0.6); 
         }
-
-        /* Header layout to align the logo and title side by side */
-        .header-container {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .header-container h2 {
-            margin: 0;
-            font-weight: 500; /* Minimal weight, not too bold */
-            color: #cba135; /* Mustard yellow accent */
-        }
-        
-        /* The emoji logo (This is where your PNG will go later) */
-        .logo {
-            font-size: 28px;
-            margin-right: 15px;
-        }
-
+        .header-container { display: flex; align-items: center; margin-bottom: 20px; }
+        .header-container h2 { margin: 0; font-weight: bold; color: #cba135; }
+        .logo { font-size: 28px; margin-right: 15px; }
         p { color: #999999; }
-
-        /* Input field styling */
+        
         input[type="text"] { 
-            width: 70%; 
-            padding: 12px; 
-            margin-bottom: 15px; 
-            border: 1px solid #333; 
-            border-radius: 4px; 
-            background-color: #222222;
-            color: #ffffff;
-            font-family: inherit;
+            width: 70%; padding: 12px; margin-bottom: 15px; border: 1px solid #333; 
+            border-radius: 4px; background-color: #222222; color: #ffffff;
+            font-family: 'Courier New', Courier, monospace; font-size: 14px;
         }
-        
-        input[type="text"]:focus {
-            outline: none;
-            border-color: #cba135; /* Mustard highlight when typing */
-        }
-
-        /* Button styling */
+        input[type="text"]:focus { outline: none; border-color: #cba135; }
         input[type="submit"] { 
-            padding: 12px 24px; 
-            background: #cba135; /* Mustard yellow */
-            color: #121212; /* Dark text on the button for contrast */
-            font-weight: 600;
-            border: none; 
-            border-radius: 4px; 
-            cursor: pointer; 
-            transition: background 0.2s ease-in-out;
+            padding: 12px 24px; background: #cba135; color: #121212; 
+            font-weight: bold; font-family: 'Courier New', Courier, monospace; 
+            font-size: 14px; border: none; border-radius: 4px; cursor: pointer; 
         }
-        
-        input[type="submit"]:hover { 
-            background: #a8852a; /* Slightly darker mustard on hover */
-        }
+        input[type="submit"]:hover { background: #a8852a; }
 
-        /* Results section styling */
-        .result-box { 
-            margin-top: 25px; 
-            padding: 20px; 
-            background: #222222; 
-            border-left: 4px solid #cba135; /* Elegant mustard line on the side */
-            border-radius: 4px; 
-        }
-        
-        .header-key { 
-            font-weight: 500; 
-            color: #cba135; /* Mustard color for the header names */
-        }
-        
+        .result-box { margin-top: 25px; padding: 20px; background: #222222; border-radius: 4px; }
         .error-text { color: #ff5252; }
-        ul { list-style-type: none; padding-left: 0; }
-        li { margin-bottom: 8px; border-bottom: 1px solid #2d2d2d; padding-bottom: 5px; }
+        ul { list-style-type: none; padding-left: 0; margin-top: 10px; }
+        li { margin-bottom: 10px; border-bottom: 1px solid #2d2d2d; padding-bottom: 8px; }
+        
+        /* New Badges for the Security Report */
+        .badge { padding: 3px 8px; border-radius: 3px; font-weight: bold; font-size: 12px; margin-right: 10px; }
+        .badge-pass { background-color: #2e7d32; color: white; }
+        .badge-fail { background-color: #d32f2f; color: white; }
+        .header-name { font-weight: bold; color: #cba135; }
     </style>
 </head>
 <body>
     <div class="container">
         
-        <!-- Header section -->
         <div class="header-container">
-            <!-- This span will be replaced by <img src="..."> when you make the logo -->
             <span class="logo">🛡️</span>
-            <h2>Web Vulnerability Scanner</h2>
+            <h2>Can I Trust You?</h2>
         </div>
         
-        <p>Enter a target URL to check its security posture.</p>
+        <p>Enter a target URL to run a security header analysis.</p>
         
-        <!-- Search form -->
         <form method="POST">
             <input type="text" name="url_input" placeholder="http://example.com" required>
             <input type="submit" value="Run Scan">
         </form>
 
-        <!-- Dynamic Results Display -->
         {% if result %}
         <div class="result-box">
-            <h4 style="color: #ffffff; margin-top: 0;">Target: {{ result.target }}</h4>
+            <h4 style="color: #ffffff; margin-top: 0; margin-bottom: 5px;">Target: {{ result.target }}</h4>
             
             {% if result.error %}
                 <p class="error-text"><strong>Connection Error:</strong> {{ result.error }}</p>
             {% else %}
-                <p style="color: #cccccc;"><strong>Status Code:</strong> {{ result.status_code }}</p>
+                <p style="color: #cccccc; margin-top: 0;"><strong>Status Code:</strong> {{ result.status_code }}</p>
                 
-                {% if result.headers %}
-                    <h4 style="color: #cba135; margin-top: 20px;">HTTP Headers Retrieved:</h4>
-                    <ul>
-                    {% for key, value in result.headers.items() %}
-                        <li><span class="header-key">{{ key }}:</span> {{ value }}</li>
-                    {% endfor %}
-                    </ul>
-                {% endif %}
+                <h4 style="color: #cba135; margin-top: 25px; border-bottom: 1px solid #444; padding-bottom: 5px;">Security Report</h4>
+                
+                <ul>
+                <!-- Display Missing Headers (Vulnerabilities) first, to draw attention -->
+                {% for header in result.security_report.vulnerable %}
+                    <li>
+                        <span class="badge badge-fail">FAIL</span> 
+                        <span class="header-name">{{ header }}</span> 
+                        <br>
+                        <span style="font-size: 12px; color: #888;">Warning: This security mechanism is completely missing.</span>
+                    </li>
+                {% endfor %}
+
+                <!-- Display Present Headers (Secure) -->
+                {% for item in result.security_report.secure %}
+                    <li>
+                        <span class="badge badge-pass">PASS</span> 
+                        <span class="header-name">{{ item.name }}</span>
+                        <br>
+                        <span style="font-size: 13px; color: #aaa;">Value: {{ item.value }}</span>
+                    </li>
+                {% endfor %}
+                </ul>
             {% endif %}
             
         </div>
