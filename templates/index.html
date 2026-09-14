@@ -15,37 +15,102 @@
             margin: auto; 
             background: #1a1a1a; 
             padding: 30px; 
-            border-radius: 6px; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.6); 
+            border-radius: 8px; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.8); 
         }
-        .header-container { display: flex; align-items: center; margin-bottom: 20px; }
-        .header-container h2 { margin: 0; font-weight: bold; color: #cba135; }
-        .logo { font-size: 28px; margin-right: 15px; }
-        p { color: #999999; }
+        
+        /* 1. Centered and Bolder Title */
+        .header-container { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; /* Centers the content horizontally */
+            margin-bottom: 30px; 
+        }
+        .header-container h2 { 
+            margin: 0; 
+            font-weight: 900; /* Extra bold */
+            font-size: 36px;
+            color: #cba135; 
+            letter-spacing: 2px;
+        }
+        .logo { font-size: 32px; margin-right: 15px; }
+        
+        .search-area { text-align: center; }
+        .search-area p { color: #999999; margin-bottom: 20px; }
         
         input[type="text"] { 
-            width: 70%; padding: 12px; margin-bottom: 15px; border: 1px solid #333; 
+            width: 60%; padding: 15px; border: 1px solid #333; 
             border-radius: 4px; background-color: #222222; color: #ffffff;
-            font-family: 'Courier New', Courier, monospace; font-size: 14px;
+            font-family: 'Courier New', Courier, monospace; font-size: 16px;
         }
         input[type="text"]:focus { outline: none; border-color: #cba135; }
+        
+        /* 2. SCAN Button */
         input[type="submit"] { 
-            padding: 12px 24px; background: #cba135; color: #121212; 
-            font-weight: bold; font-family: 'Courier New', Courier, monospace; 
-            font-size: 14px; border: none; border-radius: 4px; cursor: pointer; 
+            padding: 15px 30px; margin-left: 10px; background: #cba135; 
+            color: #121212; font-weight: 900; font-family: 'Courier New', Courier, monospace; 
+            font-size: 16px; border: none; border-radius: 4px; cursor: pointer; 
         }
         input[type="submit"]:hover { background: #a8852a; }
 
-        .result-box { margin-top: 25px; padding: 20px; background: #222222; border-radius: 4px; }
-        .error-text { color: #ff5252; }
-        ul { list-style-type: none; padding-left: 0; margin-top: 10px; }
-        li { margin-bottom: 10px; border-bottom: 1px solid #2d2d2d; padding-bottom: 8px; }
+        /* 3. Loading Bar Animation */
+        #loader { display: none; margin-top: 30px; text-align: center; }
+        .loading-track { 
+            width: 50%; height: 6px; background: #333; 
+            border-radius: 3px; margin: 10px auto; overflow: hidden; position: relative; 
+        }
+        .loading-progress { 
+            width: 40%; height: 100%; background: #cba135; 
+            position: absolute; border-radius: 3px;
+            animation: slide 1.5s infinite ease-in-out; 
+        }
+        @keyframes slide {
+            0% { left: -40%; }
+            100% { left: 100%; }
+        }
+
+        /* 4. Scoreboard Layout (Cisco Style) */
+        .result-box { margin-top: 30px; padding: 25px; background: #222222; border-radius: 6px; }
+        .scoreboard {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
         
-        /* New Badges for the Security Report */
-        .badge { padding: 3px 8px; border-radius: 3px; font-weight: bold; font-size: 12px; margin-right: 10px; }
+        /* Circular CSS Gauge */
+        .circular-chart {
+            position: relative;
+            display: inline-block;
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            /* The background uses a conic gradient to draw the pie chart based on the score */
+        }
+        .circular-chart::before {
+            content: "";
+            position: absolute;
+            top: 15px; left: 15px; right: 15px; bottom: 15px;
+            background-color: #1a1a1a;
+            border-radius: 50%;
+        }
+        .score-value {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 32px;
+            font-weight: 900;
+        }
+
+        .error-text { color: #ff5252; text-align: center; font-size: 18px; }
+        ul { list-style-type: none; padding-left: 0; }
+        li { margin-bottom: 12px; border-bottom: 1px solid #2d2d2d; padding-bottom: 10px; }
+        .badge { padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 13px; margin-right: 12px; }
         .badge-pass { background-color: #2e7d32; color: white; }
         .badge-fail { background-color: #d32f2f; color: white; }
-        .header-name { font-weight: bold; color: #cba135; }
+        .header-name { font-weight: bold; color: #cba135; font-size: 16px; }
     </style>
 </head>
 <body>
@@ -56,42 +121,66 @@
             <h2>Can I Trust You?</h2>
         </div>
         
-        <p>Enter a target URL to run a security header analysis.</p>
-        
-        <form method="POST">
-            <input type="text" name="url_input" placeholder="http://example.com" required>
-            <input type="submit" value="Run Scan">
-        </form>
+        <div class="search-area">
+            <p>Enter a target URL to evaluate its security posture.</p>
+            <!-- Form triggers the JavaScript function showLoader() on submit -->
+            <form method="POST" onsubmit="showLoader()">
+                <input type="text" name="url_input" placeholder="http://example.com" required>
+                <input type="submit" value="SCAN">
+            </form>
+        </div>
+
+        <!-- The Loading Animation (Hidden by default) -->
+        <div id="loader">
+            <p style="color: #cba135; font-size: 14px;">Analyzing headers, please wait...</p>
+            <div class="loading-track">
+                <div class="loading-progress"></div>
+            </div>
+        </div>
 
         {% if result %}
-        <div class="result-box">
-            <h4 style="color: #ffffff; margin-top: 0; margin-bottom: 5px;">Target: {{ result.target }}</h4>
+        <!-- Hide the results if the loader is active again -->
+        <div class="result-box" id="result-box">
             
             {% if result.error %}
-                <p class="error-text"><strong>Connection Error:</strong> {{ result.error }}</p>
+                <p class="error-text"><strong>Connection Failed:</strong><br><br> {{ result.error }}</p>
             {% else %}
-                <p style="color: #cccccc; margin-top: 0;"><strong>Status Code:</strong> {{ result.status_code }}</p>
                 
-                <h4 style="color: #cba135; margin-top: 25px; border-bottom: 1px solid #444; padding-bottom: 5px;">Security Report</h4>
+                <!-- Dynamic Color Logic based on Score -->
+                {% set score_color = '#d32f2f' %} <!-- Default Red -->
+                {% if result.score >= 80 %}
+                    {% set score_color = '#4caf50' %} <!-- Green for good score -->
+                {% elif result.score >= 40 %}
+                    {% set score_color = '#cba135' %} <!-- Mustard/Yellow for medium -->
+                {% endif %}
+
+                <!-- Scoreboard Section -->
+                <div class="scoreboard">
+                    <div class="circular-chart" style="background: conic-gradient({{ score_color }} calc({{ result.score }} * 1%), #333 0);">
+                        <div class="score-value" style="color: {{ score_color }};">{{ result.score }}%</div>
+                    </div>
+                    <h3 style="margin-top: 25px; color: #ffffff;">Safeness Score</h3>
+                    <p style="margin: 0; color: #888;">Target: <strong>{{ result.target }}</strong></p>
+                </div>
+                
+                <h4 style="color: #cba135; border-bottom: 1px solid #444; padding-bottom: 5px;">Detailed Breakdown</h4>
                 
                 <ul>
-                <!-- Display Missing Headers (Vulnerabilities) first, to draw attention -->
                 {% for header in result.security_report.vulnerable %}
                     <li>
                         <span class="badge badge-fail">FAIL</span> 
                         <span class="header-name">{{ header }}</span> 
                         <br>
-                        <span style="font-size: 12px; color: #888;">Warning: This security mechanism is completely missing.</span>
+                        <span style="font-size: 13px; color: #888; margin-left: 65px;">Warning: Header missing.</span>
                     </li>
                 {% endfor %}
 
-                <!-- Display Present Headers (Secure) -->
                 {% for item in result.security_report.secure %}
                     <li>
                         <span class="badge badge-pass">PASS</span> 
                         <span class="header-name">{{ item.name }}</span>
                         <br>
-                        <span style="font-size: 13px; color: #aaa;">Value: {{ item.value }}</span>
+                        <span style="font-size: 13px; color: #aaa; margin-left: 65px;">Value: {{ item.value }}</span>
                     </li>
                 {% endfor %}
                 </ul>
@@ -101,5 +190,19 @@
         {% endif %}
         
     </div>
+
+    <!-- JavaScript to handle the loading animation -->
+    <script>
+        function showLoader() {
+            // Show the loading bar
+            document.getElementById('loader').style.display = 'block';
+            
+            // Hide the old results box so it doesn't stay on screen while loading the new one
+            var resultBox = document.getElementById('result-box');
+            if (resultBox) {
+                resultBox.style.display = 'none';
+            }
+        }
+    </script>
 </body>
 </html>

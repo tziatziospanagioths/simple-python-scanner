@@ -1,22 +1,20 @@
 import requests
 import urllib3
 
-# Suppress the warning that Python prints when we intentionally ignore SSL errors
+# Suppress the warning for bypassing invalid SSL certificates
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-# A list of critical security headers we want to check for
 SECURITY_HEADERS = [
-    'Strict-Transport-Security', # Enforces HTTPS
-    'X-Frame-Options',           # Prevents Clickjacking
-    'X-Content-Type-Options',    # Prevents MIME-sniffing
-    'Content-Security-Policy',   # Prevents XSS attacks
-    'Referrer-Policy'            # Controls information sent in the Referer header
+    'Strict-Transport-Security', 
+    'X-Frame-Options',           
+    'X-Content-Type-Options',    
+    'Content-Security-Policy',   
+    'Referrer-Policy'            
 ]
 
 def check_headers(url):
     """
-    Scans the target URL, retrieves headers, and analyzes them.
-    Now configured to bypass invalid SSL certificates (useful for shady sites).
+    Scans the URL, retrieves headers, and calculates a Safeness Score.
     """
     scan_results = {
         'target': url,
@@ -25,6 +23,7 @@ def check_headers(url):
             'secure': [],      
             'vulnerable': []   
         },
+        'score': 0, # Added a new field to hold our safeness percentage
         'error': None
     }
     
@@ -33,7 +32,6 @@ def check_headers(url):
         scan_results['target'] = url
 
     try:
-        # Added verify=False to force the connection even if the SSL certificate is invalid/fake
         response = requests.get(url, timeout=5, verify=False)
         scan_results['status_code'] = response.status_code
         
@@ -48,9 +46,14 @@ def check_headers(url):
                     })
                 else:
                     scan_results['security_report']['vulnerable'].append(header)
+            
+            # Calculate the Safeness Score based on how many headers were found
+            total_headers = len(SECURITY_HEADERS)
+            secure_count = len(scan_results['security_report']['secure'])
+            # (Secure / Total) * 100 to get the percentage
+            scan_results['score'] = int((secure_count / total_headers) * 100)
                     
     except requests.exceptions.RequestException as e:
-        # We only catch actual connection drops now, not SSL mismatches
         scan_results['error'] = str(e)
         
     return scan_results
